@@ -34,17 +34,13 @@ async function startServer() {
 
   app.get("/api/stats", (req, res) => {
     try {
-      // Get only today's records (China Time YYYY-MM-DD)
-      // We'll use the date passed from client or calculated on server
-      // To be safe, let's just return everything and let client filter, 
-      // OR better, use the date('now', 'localtime') or similar.
-      // Since the client sends 'date' as YYYY-MM-DD, we can use that.
-      const today = new Date(new Date().getTime() + 8 * 3600000).toISOString().split('T')[0];
+      // Get records from the last 7 days to support weekly report
+      const sevenDaysAgo = new Date(new Date().getTime() + 8 * 3600000 - 7 * 24 * 3600000).toISOString().split('T')[0];
       const records = db.prepare(`
         SELECT * FROM checkins 
-        WHERE date = ?
+        WHERE date >= ?
         ORDER BY timestamp DESC
-      `).all(today);
+      `).all(sevenDaysAgo);
       res.json(records);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch stats" });
