@@ -39,11 +39,11 @@ async function startServer() {
 
   app.get("/api/stats", (req, res) => {
     try {
-      const sevenDaysAgo = new Date(
-        new Date().getTime() + 8 * 3600000 - 7 * 24 * 3600000
-      )
-        .toISOString()
-        .split("T")[0];
+      // Get current date in China (UTC+8)
+      const now = new Date();
+      const chinaTime = new Date(now.getTime() + 8 * 3600000);
+      const sevenDaysAgoDate = new Date(chinaTime.getTime() - 7 * 24 * 3600000);
+      const sevenDaysAgo = sevenDaysAgoDate.toISOString().split("T")[0];
 
       const records = db
         .prepare(
