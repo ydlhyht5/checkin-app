@@ -244,7 +244,7 @@ export default function App() {
             <Sparkles className="text-white w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight font-anime text-gradient-animate">晨曦晚露</h1>
+            <h1 className="text-2xl font-bold tracking-tight font-anime text-gradient-animate">传承62</h1>
           </div>
         </div>
         <div className="text-right">
