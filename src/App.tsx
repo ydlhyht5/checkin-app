@@ -98,6 +98,11 @@ export default function App() {
   const [serverTimeOffset, setServerTimeOffset] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
+  // Reset expanded team when view changes
+  useEffect(() => {
+    setExpandedTeam(null);
+  }, [view]);
+
   // Sync with server time
   useEffect(() => {
     const syncTime = async () => {
