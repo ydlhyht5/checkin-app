@@ -2,6 +2,7 @@ import express from "express";
 import { createServer as createViteServer } from "vite";
 import Database from "better-sqlite3";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,7 +25,7 @@ db.exec(`
 
 async function startServer() {
   const app = express();
-  const PORT = Number(process.env.PORT) || 3007;
+  const PORT = Number(process.env.PORT) || 3000;
 
   app.use(express.json());
 
@@ -114,8 +115,10 @@ async function startServer() {
   } else {
     console.log("Running in PRODUCTION mode");
 
-    // IMPORTANT: dist is one level up from dist-server
-    const distPath = path.join(__dirname, "../dist");
+    // Check both local dist and parent dist (for different deployment structures)
+    const distPath = fs.existsSync(path.join(__dirname, "dist")) 
+      ? path.join(__dirname, "dist")
+      : path.join(__dirname, "../dist");
 
     app.use(express.static(distPath));
 
