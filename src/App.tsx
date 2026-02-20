@@ -146,8 +146,8 @@ export default function App() {
     if (currentTimeVal >= 6.5 && currentTimeVal <= 10) {
       return 'morning';
     }
-    // Evening: 17:00 - 19:00
-    if (currentTimeVal >= 17 && currentTimeVal <= 19) {
+    // Evening: 20:00 - 23:30
+    if (currentTimeVal >= 20 && currentTimeVal <= 23.5) {
       return 'evening';
     }
     return null;
@@ -274,7 +274,7 @@ export default function App() {
                 <div className={`p-4 rounded-2xl border-2 transition-all ${checkInType === 'evening' ? 'border-indigo-200 bg-indigo-50' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
                   <Moon className={`w-8 h-8 mb-2 ${checkInType === 'evening' ? 'text-indigo-500' : 'text-slate-400'}`} />
                   <p className="text-xs font-bold text-slate-400 uppercase">晚结时间</p>
-                  <p className="text-sm font-semibold text-slate-700">17:00 - 19:00</p>
+                  <p className="text-sm font-semibold text-slate-700">20:00 - 23:30</p>
                 </div>
               </div>
 
