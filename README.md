@@ -1,4 +1,4 @@
-# 🌅 晨曦晚露 (Dawn & Dew)
+# 🌅 传承62 (Legacy 62)
 ### 极简 · 优雅 · 精准的小组打卡管理系统
 ### Minimalist · Elegant · Precise Team Check-in Management System
 
@@ -6,9 +6,9 @@
 
 ## 🌟 项目简介 | Introduction
 
-**晨曦晚露** 是一款专为团队协作、早宣晚结设计的全栈打卡应用。它不仅拥有令人愉悦的视觉设计，更在底层逻辑上实现了高精度的时间同步与数据持久化。无论是清晨的奋斗宣言，还是深夜的复盘总结，它都能为您记录每一刻的成长。
+**传承62** 是一款专为团队协作、早宣晚结设计的全栈打卡应用。它不仅拥有令人愉悦的视觉设计，更在底层逻辑上实现了高精度的时间同步与数据持久化。无论是清晨的奋斗宣言，还是深夜的复盘总结，它都能为您记录每一刻的成长。
 
-**Dawn & Dew** is a full-stack check-in application designed specifically for team collaboration and daily routines. It combines delightful visual design with high-precision time synchronization and data persistence.
+**Legacy 62** is a full-stack check-in application designed specifically for team collaboration and daily routines. It combines delightful visual design with high-precision time synchronization and data persistence.
 
 ---
 
