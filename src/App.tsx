@@ -516,7 +516,9 @@ export default function App() {
                         </div>
                       </div>
                       <div className="flex flex-col items-end">
-                        <span className="text-slate-500 font-mono font-medium">{new Date(record.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</span>
+                        <span className="text-slate-500 font-mono font-medium">
+                          {record.date.split('-').slice(1).join('-')} {new Date(record.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
                       </div>
                     </div>
                   ))}
