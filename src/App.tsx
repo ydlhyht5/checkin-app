@@ -133,14 +133,34 @@ export default function App() {
   }, [serverTimeOffset]);
 
   // Time Logic (China Time UTC+8)
-  const chinaTime = useMemo(() => {
-    // Convert current server-synced time to UTC+8
-    return new Date(currentTime.getTime() + (currentTime.getTimezoneOffset() + 480) * 60000);
+  const { todayStr, currentHour, currentMinute, displayTime } = useMemo(() => {
+    const formatter = new Intl.DateTimeFormat('sv-SE', {
+      timeZone: 'Asia/Shanghai',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+    
+    const parts = formatter.formatToParts(currentTime);
+    const getPart = (type: string) => parts.find(p => p.type === type)?.value || '';
+    
+    const year = getPart('year');
+    const month = getPart('month');
+    const day = getPart('day');
+    const hour = parseInt(getPart('hour'), 10);
+    const minute = parseInt(getPart('minute'), 10);
+
+    return {
+      todayStr: `${year}-${month}-${day}`,
+      currentHour: hour,
+      currentMinute: minute,
+      displayTime: `${getPart('hour')}:${getPart('minute')}`
+    };
   }, [currentTime]);
 
-  const todayStr = chinaTime.toISOString().split('T')[0];
-  const currentHour = chinaTime.getHours();
-  const currentMinute = chinaTime.getMinutes();
   const currentTimeVal = currentHour + currentMinute / 60;
 
   const checkInType: CheckInType | null = useMemo(() => {
@@ -251,7 +271,7 @@ export default function App() {
           <div className="flex items-center justify-end gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
             <p className="text-white font-bold text-lg tabular-nums">
-              {chinaTime.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+              {displayTime}
             </p>
           </div>
           <p className="text-white/60 text-xs">{todayStr}</p>
@@ -526,8 +546,8 @@ export default function App() {
                   
                   // Calculate daily average for the last 7 days
                   const last7Days = Array.from({ length: 7 }, (_, i) => {
-                    const d = new Date(chinaTime.getTime() - i * 24 * 3600000);
-                    return d.toISOString().split('T')[0];
+                const d = new Date(currentTime.getTime() + 8 * 3600000 - i * 24 * 3600000);
+                return d.toISOString().split('T')[0];
                   }).reverse();
 
                   const dailyStats = last7Days.map(date => {
