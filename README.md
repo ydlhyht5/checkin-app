@@ -1,69 +1,82 @@
-# 晨曦晚露 - 极简打卡程序
+# 🌅 晨曦晚露 (Dawn & Dew)
+### 极简 · 优雅 · 精准的小组打卡管理系统
+### Minimalist · Elegant · Precise Team Check-in Management System
 
-这是一个基于 React + Express + SQLite 构建的精美打卡程序，专为小组早宣晚结设计。
+---
 
-## 🚀 快速开始
+## 🌟 项目简介 | Introduction
 
-### 1. 环境准备
-确保您的服务器已安装 [Node.js](https://nodejs.org/) (建议 v18 或更高版本)。
+**晨曦晚露** 是一款专为团队协作、早宣晚结设计的全栈打卡应用。它不仅拥有令人愉悦的视觉设计，更在底层逻辑上实现了高精度的时间同步与数据持久化。无论是清晨的奋斗宣言，还是深夜的复盘总结，它都能为您记录每一刻的成长。
 
-### 2. 下载代码
-将代码上传到您的服务器或通过 GitHub 克隆：
-```bash
-git clone <您的仓库地址>
-cd <项目目录>
-```
+**Dawn & Dew** is a full-stack check-in application designed specifically for team collaboration and daily routines. It combines delightful visual design with high-precision time synchronization and data persistence.
 
-### 3. 安装依赖
-在项目根目录下运行：
-```bash
-npm install
-```
+---
 
-### 4. 运行程序
+## ✨ 核心功能 | Core Features
 
-#### 开发模式
-```bash
-npm run dev
-```
+### 1. 🕒 实时精准时钟 (Real-time Precision Clock)
+*   **服务器同步**：自动校准服务器时间，消除客户端系统时钟偏差。
+*   **北京时间锁定**：无论服务器身处何处，逻辑判定严格遵循中国标准时间 (UTC+8)。
+*   **动态更新**：分钟级实时跳动，无需刷新即可掌握最精准的打卡窗口。
 
-#### 生产模式 (部署建议)
-首先构建前端资源：
-```bash
-npm run build
-```
-然后启动服务器：
-```bash
-# 使用 tsx 直接运行 (推荐)
-npx tsx server.ts
+### 2. 🎨 沉浸式视觉设计 (Immersive UI/UX)
+*   **动漫风格美学**：精致的流光背景、毛玻璃质感 (Glassmorphism) 与灵动的渐变标题。
+*   **响应式适配**：针对移动端触摸体验深度优化，支持微信、Safari 等主流浏览器。
+*   **动效反馈**：基于 `motion` 的平滑过渡，让每一次点击都充满仪式感。
 
-# 或者设置环境变量运行
-export NODE_ENV=production
-npx tsx server.ts
-```
+### 3. 📊 智能打卡看板 (Intelligent Dashboard)
+*   **多维度统计**：实时显示各小组“早宣”与“晚结”的完成比例。
+*   **未打卡追踪**：一键展开小组详情，精准定位“未早宣”或“未晚结”的成员。
+*   **动态流**：底部实时滚动显示最新的打卡动态，团队氛围一目了然。
 
-## 🛠 部署到 GitHub 步骤
+### 4. 🔒 稳健的后端架构 (Robust Backend)
+*   **轻量持久化**：采用 SQLite 数据库，零配置即可实现数据永久存储。
+*   **防重复机制**：严格的打卡判定逻辑，确保每人每天每时段仅能打卡一次。
+*   **容错处理**：完善的 API 校验与错误捕获，确保系统在高并发下依然稳定。
 
-1. **创建仓库**：在 GitHub 上创建一个新的私有或公开仓库。
-2. **初始化本地仓库**：
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   ```
-3. **推送到 GitHub**：
-   ```bash
-   git remote add origin <您的仓库URL>
-   git branch -M main
-   git push -u origin main
-   ```
+---
 
-## 📱 设备兼容性
-- **手机端**：完美适配 iOS (Safari) 和 Android (Chrome/微信浏览器)。使用了响应式布局和触摸优化。
-- **电脑端**：适配所有主流浏览器 (Chrome, Edge, Firefox, Safari)。
-- **动态效果**：标题渐变和背景流光效果使用了标准的 CSS3 动画，具备良好的跨设备兼容性。
+## 🛠 技术栈 | Tech Stack
 
-## 📝 注意事项
-- **数据库**：程序会自动在根目录创建 `checkin.db` 文件。
-- **端口**：默认运行在 `3000` 端口，您可以根据需要在 `server.ts` 中修改。
-- **时间**：程序内部逻辑已锁定中国标准时间 (UTC+8)，无论服务器位于何处，打卡时间判定均以北京时间为准。
+*   **Frontend**: React 18, Tailwind CSS, Lucide React, Framer Motion
+*   **Backend**: Node.js, Express, Better-SQLite3
+*   **Build Tool**: Vite, tsx
+
+---
+
+## 🚀 部署指南 | Deployment Guide
+
+### 1. 环境准备 | Prerequisites
+*   **Node.js**: v18.0.0+
+*   **Package Manager**: npm or yarn
+
+### 2. 安装与运行 | Installation & Running
+
+#### 中文说明
+1. **克隆项目**: `git clone <repo_url>`
+2. **安装依赖**: `npm install`
+3. **构建前端**: `npm run build`
+4. **启动服务**: `npm start` (默认端口 3000)
+
+#### English Instructions
+1. **Clone Project**: `git clone <repo_url>`
+2. **Install Deps**: `npm install`
+3. **Build Frontend**: `npm run build`
+4. **Start Server**: `npm start` (Default port: 3000)
+
+### 3. 环境变量 | Environment Variables
+*   `PORT`: 服务端口 (Default: 3000)
+*   `NODE_ENV`: 运行模式 (Set to `production` for deployment)
+
+---
+
+## 📝 打卡规则 | Check-in Rules
+
+*   **早宣时间 (Morning)**: `06:30 - 10:00`
+*   **晚结时间 (Evening)**: `20:00 - 23:30`
+*   **判定逻辑**: 系统会自动识别当前时间所属时段，非打卡时段按钮将自动禁用。
+
+---
+
+## 📄 开源协议 | License
+Apache-2.0 License. 记录每一天的成长与坚持。
