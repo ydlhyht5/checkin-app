@@ -88,19 +88,21 @@ const NeoButton = ({
 };
 
 export default function App() {
-  const [view, setView] = useState<'home' | 'team-select' | 'member-select' | 'stats'>('home');
+  const [view, setView] = useState<'home' | 'team-select' | 'member-select' | 'stats' | 'weekly'>('home');
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
   const [selectedMember, setSelectedMember] = useState<string | null>(null);
   const [stats, setStats] = useState<CheckInData[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
   const [expandedTeam, setExpandedTeam] = useState<string | null>(null);
+  const [selectedWeeklyDate, setSelectedWeeklyDate] = useState<string | null>(null);
   const [serverTimeOffset, setServerTimeOffset] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
   // Reset expanded team when view changes
   useEffect(() => {
     setExpandedTeam(null);
+    setSelectedWeeklyDate(null);
   }, [view]);
 
   // Sync with server time
@@ -200,7 +202,7 @@ export default function App() {
         setTimeout(() => {
           setView('stats');
           setMessage(null);
-        }, 1500);
+        }, 1000);
       } else {
         setMessage({ text: data.error || "打卡失败", type: 'error' });
         setTimeout(() => setMessage(null), 3000);
@@ -503,6 +505,181 @@ export default function App() {
               </div>
             </GlassCard>
           )}
+          {view === 'weekly' && (
+            <GlassCard key="weekly" className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setView('home')} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                    <ArrowLeft className="w-5 h-5 text-slate-600" />
+                  </button>
+                  <h2 className="text-xl font-bold text-slate-800">周报概览</h2>
+                </div>
+                <div className="bg-indigo-100 px-3 py-1 rounded-full">
+                  <span className="text-[10px] font-bold text-indigo-600 uppercase">最近7天</span>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                {TEAMS.map((team) => {
+                  const teamRecords = stats.filter(s => s.team === team);
+                  const teamLength = TEAM_MEMBERS[team].length;
+                  
+                  // Calculate daily average for the last 7 days
+                  const last7Days = Array.from({ length: 7 }, (_, i) => {
+                    const d = new Date(chinaTime.getTime() - i * 24 * 3600000);
+                    return d.toISOString().split('T')[0];
+                  }).reverse();
+
+                  const dailyStats = last7Days.map(date => {
+                    const dayRecords = teamRecords.filter(r => r.date === date);
+                    return {
+                      date,
+                      morning: dayRecords.filter(r => r.type === 'morning').length,
+                      evening: dayRecords.filter(r => r.type === 'evening').length
+                    };
+                  });
+
+                  const totalMorning = dailyStats.reduce((acc, curr) => acc + curr.morning, 0);
+                  const totalEvening = dailyStats.reduce((acc, curr) => acc + curr.evening, 0);
+                  const avgMorning = (totalMorning / (7 * teamLength)) * 100;
+                  const avgEvening = (totalEvening / (7 * teamLength)) * 100;
+
+                  return (
+                    <div key={team} className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm space-y-4">
+                      <div className="flex justify-between items-center">
+                        <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                          <Users className="w-4 h-4 text-indigo-500" />
+                          {team}组
+                        </h3>
+                        <div className="text-[10px] font-bold text-slate-400">
+                          遵守承诺率
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-[10px] font-bold uppercase">
+                            <span className="text-amber-500">早宣</span>
+                            <span className="text-slate-600">{avgMorning.toFixed(1)}%</span>
+                          </div>
+                          <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                            <motion.div 
+                              initial={{ width: 0 }}
+                              animate={{ width: `${avgMorning}%` }}
+                              className="h-full bg-amber-400"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <div className="flex justify-between text-[10px] font-bold uppercase">
+                            <span className="text-indigo-500">晚结</span>
+                            <span className="text-slate-600">{avgEvening.toFixed(1)}%</span>
+                          </div>
+                          <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                            <motion.div 
+                              initial={{ width: 0 }}
+                              animate={{ width: `${avgEvening}%` }}
+                              className="h-full bg-indigo-400"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between gap-1 h-12 items-end">
+                        {dailyStats.map((day, idx) => {
+                          const combinedPercent = ((day.morning + day.evening) / (2 * teamLength)) * 100;
+                          const isSelected = selectedWeeklyDate === `${team}-${day.date}`;
+                          return (
+                            <button 
+                              key={idx} 
+                              onClick={() => setSelectedWeeklyDate(isSelected ? null : `${team}-${day.date}`)}
+                              className="flex-1 flex flex-col items-center gap-1 group"
+                            >
+                              <div className={`w-full rounded-t-sm relative h-8 transition-colors ${isSelected ? 'bg-indigo-100' : 'bg-slate-50 group-hover:bg-slate-100'}`}>
+                                <motion.div 
+                                  initial={{ height: 0 }}
+                                  animate={{ height: `${combinedPercent}%` }}
+                                  className={`absolute bottom-0 left-0 right-0 rounded-t-sm transition-colors ${isSelected ? 'bg-indigo-500' : 'bg-indigo-300'}`}
+                                />
+                              </div>
+                              <span className={`text-[8px] font-mono transition-colors ${isSelected ? 'text-indigo-600 font-bold' : 'text-slate-400'}`}>
+                                {day.date.split('-').slice(1).join('/')}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <AnimatePresence>
+                        {selectedWeeklyDate?.startsWith(`${team}-`) && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="mt-4 p-3 bg-slate-50 rounded-xl space-y-3 border border-slate-100">
+                              <div className="flex justify-between items-center border-b border-slate-200 pb-2">
+                                <p className="text-[10px] font-bold text-slate-500 uppercase">
+                                  {selectedWeeklyDate.split('-').slice(1).join('-')} 详情
+                                </p>
+                                <button onClick={() => setSelectedWeeklyDate(null)} className="text-[10px] text-indigo-500 font-bold">关闭</button>
+                              </div>
+                              
+                              {(() => {
+                                const date = selectedWeeklyDate.split('-').slice(1).join('-');
+                                const dayRecords = teamRecords.filter(r => r.date === date);
+                                const morningChecked = dayRecords.filter(r => r.type === 'morning').map(r => r.name);
+                                const eveningChecked = dayRecords.filter(r => r.type === 'evening').map(r => r.name);
+                                
+                                const morningMissing = TEAM_MEMBERS[team].filter(m => !morningChecked.includes(m));
+                                const eveningMissing = TEAM_MEMBERS[team].filter(m => !eveningChecked.includes(m));
+
+                                if (morningMissing.length === 0 && eveningMissing.length === 0) {
+                                  return (
+                                    <div className="py-2 text-center">
+                                      <p className="text-xs font-bold text-emerald-600 flex items-center justify-center gap-1">
+                                        <Sparkles className="w-3 h-3" /> 恭喜今日全部完成打卡！
+                                      </p>
+                                    </div>
+                                  );
+                                }
+
+                                return (
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                      <p className="text-[9px] font-bold text-amber-600 uppercase flex items-center gap-1">
+                                        <Sun className="w-2.5 h-2.5" /> 未早宣 ({morningMissing.length})
+                                      </p>
+                                      <div className="flex flex-wrap gap-1">
+                                        {morningMissing.length > 0 ? morningMissing.map(m => (
+                                          <span key={m} className="px-1.5 py-0.5 bg-white border border-amber-100 text-amber-700 rounded text-[9px]">{m}</span>
+                                        )) : <span className="text-[9px] text-slate-400 italic">全员已打卡</span>}
+                                      </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <p className="text-[9px] font-bold text-indigo-600 uppercase flex items-center gap-1">
+                                        <Moon className="w-2.5 h-2.5" /> 未晚结 ({eveningMissing.length})
+                                      </p>
+                                      <div className="flex flex-wrap gap-1">
+                                        {eveningMissing.length > 0 ? eveningMissing.map(m => (
+                                          <span key={m} className="px-1.5 py-0.5 bg-white border border-indigo-100 text-indigo-700 rounded text-[9px]">{m}</span>
+                                        )) : <span className="text-[9px] text-slate-400 italic">全员已打卡</span>}
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })()}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  );
+                })}
+              </div>
+            </GlassCard>
+          )}
         </AnimatePresence>
       </main>
 
@@ -524,21 +701,29 @@ export default function App() {
       </AnimatePresence>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-6 left-4 right-4 h-16 glass rounded-2xl flex items-center justify-around px-6 z-40">
+      <nav className="fixed bottom-6 left-4 right-4 h-16 glass rounded-2xl flex items-center justify-around px-2 z-40">
         <button 
           onClick={() => setView('home')}
-          className={`flex flex-col items-center gap-1 transition-all ${view === 'home' ? 'text-indigo-600 scale-110' : 'text-slate-400'}`}
+          className={`flex flex-col items-center gap-1 transition-all flex-1 ${view === 'home' ? 'text-indigo-600 scale-110' : 'text-slate-400'}`}
         >
-          <Home className="w-6 h-6" />
+          <Home className="w-5 h-5" />
           <span className="text-[10px] font-bold uppercase tracking-tighter">首页</span>
         </button>
         <div className="w-px h-8 bg-slate-200" />
         <button 
           onClick={() => setView('stats')}
-          className={`flex flex-col items-center gap-1 transition-all ${view === 'stats' ? 'text-indigo-600 scale-110' : 'text-slate-400'}`}
+          className={`flex flex-col items-center gap-1 transition-all flex-1 ${view === 'stats' ? 'text-indigo-600 scale-110' : 'text-slate-400'}`}
         >
-          <BarChart3 className="w-6 h-6" />
+          <BarChart3 className="w-5 h-5" />
           <span className="text-[10px] font-bold uppercase tracking-tighter">看板</span>
+        </button>
+        <div className="w-px h-8 bg-slate-200" />
+        <button 
+          onClick={() => setView('weekly')}
+          className={`flex flex-col items-center gap-1 transition-all flex-1 ${view === 'weekly' ? 'text-indigo-600 scale-110' : 'text-slate-400'}`}
+        >
+          <Clock className="w-5 h-5" />
+          <span className="text-[10px] font-bold uppercase tracking-tighter">周报</span>
         </button>
       </nav>
 
