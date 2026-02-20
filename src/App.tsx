@@ -146,8 +146,8 @@ export default function App() {
     if (currentTimeVal >= 6.5 && currentTimeVal <= 10) {
       return 'morning';
     }
-    // Evening: 20:00 - 23:30
-    if (currentTimeVal >= 20 && currentTimeVal <= 23.5) {
+    // Evening: 17:00 - 19:00
+    if (currentTimeVal >= 17 && currentTimeVal <= 19) {
       return 'evening';
     }
     return null;
@@ -167,8 +167,18 @@ export default function App() {
     fetchStats();
   }, []);
 
+  const isAlreadyCheckedIn = useMemo(() => {
+    if (!selectedMember || !selectedTeam || !checkInType) return false;
+    return stats.some(s => 
+      s.name === selectedMember && 
+      s.team === selectedTeam && 
+      s.type === checkInType && 
+      s.date === todayStr
+    );
+  }, [selectedMember, selectedTeam, checkInType, stats, todayStr]);
+
   const handleCheckIn = async () => {
-    if (!selectedTeam || !selectedMember || !checkInType) return;
+    if (!selectedTeam || !selectedMember || !checkInType || isAlreadyCheckedIn) return;
 
     setLoading(true);
     try {
@@ -193,9 +203,11 @@ export default function App() {
         }, 1500);
       } else {
         setMessage({ text: data.error || "打卡失败", type: 'error' });
+        setTimeout(() => setMessage(null), 3000);
       }
     } catch (err) {
       setMessage({ text: "网络错误，请重试", type: 'error' });
+      setTimeout(() => setMessage(null), 3000);
     } finally {
       setLoading(false);
     }
@@ -262,7 +274,7 @@ export default function App() {
                 <div className={`p-4 rounded-2xl border-2 transition-all ${checkInType === 'evening' ? 'border-indigo-200 bg-indigo-50' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
                   <Moon className={`w-8 h-8 mb-2 ${checkInType === 'evening' ? 'text-indigo-500' : 'text-slate-400'}`} />
                   <p className="text-xs font-bold text-slate-400 uppercase">晚结时间</p>
-                  <p className="text-sm font-semibold text-slate-700">20:00 - 23:30</p>
+                  <p className="text-sm font-semibold text-slate-700">17:00 - 19:00</p>
                 </div>
               </div>
 
@@ -352,9 +364,10 @@ export default function App() {
                   <NeoButton 
                     onClick={handleCheckIn} 
                     className="w-full py-4"
-                    disabled={loading}
+                    disabled={loading || isAlreadyCheckedIn}
+                    variant={isAlreadyCheckedIn ? 'secondary' : 'primary'}
                   >
-                    {loading ? '打卡中...' : `确认打卡 (${checkInType === 'morning' ? '早宣' : '晚结'})`}
+                    {loading ? '打卡中...' : (isAlreadyCheckedIn ? '今日已打卡' : `确认打卡 (${checkInType === 'morning' ? '早宣' : '晚结'})`)}
                     <CheckCircle2 className="w-5 h-5" />
                   </NeoButton>
                 </motion.div>
@@ -472,12 +485,17 @@ export default function App() {
                 <h3 className="text-sm font-bold text-slate-800 mb-3">最新打卡</h3>
                 <div className="space-y-3 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
                   {stats.slice(0, 10).map((record) => (
-                    <div key={record.id} className="flex items-center justify-between text-xs p-2 bg-slate-50 rounded-xl">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${record.type === 'morning' ? 'bg-amber-400' : 'bg-indigo-400'}`} />
-                        <span className="font-bold text-slate-700">{record.team}组 - {record.name}</span>
+                    <div key={record.id} className="flex items-center justify-between text-xs p-3 bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 shadow-sm rounded-xl transition-all hover:shadow-md">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-2.5 h-2.5 rounded-full shadow-sm ${record.type === 'morning' ? 'bg-amber-400' : 'bg-indigo-400'}`} />
+                        <div className="flex flex-col">
+                          <span className="font-bold text-slate-700">{record.team}组 · {record.name}</span>
+                          <span className="text-[10px] text-slate-400">{record.type === 'morning' ? '早宣打卡' : '晚结打卡'}</span>
+                        </div>
                       </div>
-                      <span className="text-slate-400">{new Date(record.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</span>
+                      <div className="flex flex-col items-end">
+                        <span className="text-slate-500 font-mono font-medium">{new Date(record.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</span>
+                      </div>
                     </div>
                   ))}
                   {stats.length === 0 && <p className="text-center text-slate-400 py-4">暂无打卡记录</p>}
