@@ -447,7 +447,7 @@ export default function App() {
                               {(!checkInType || checkInType === 'evening') && (
                                 <div>
                                   <p className="text-[10px] font-bold text-indigo-600 uppercase mb-1 flex items-center gap-1">
-                                    <Moon className="w-3 h-3" /> 未完结 ({eveningMissing.length})
+                                    <Moon className="w-3 h-3" /> 未晚结 ({eveningMissing.length})
                                   </p>
                                   <div className="flex flex-wrap gap-1">
                                     {eveningMissing.length > 0 ? eveningMissing.map(m => (
