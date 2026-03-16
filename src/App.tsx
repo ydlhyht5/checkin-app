@@ -506,7 +506,7 @@ export default function App() {
               <div className="pt-4 border-t border-slate-100">
                 <h3 className="text-sm font-bold text-slate-800 mb-3">最新打卡</h3>
                 <div className="space-y-3 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
-                  {stats.slice(0, 10).map((record) => (
+                  {stats.map((record) => (
                     <div key={record.id} className="flex items-center justify-between text-xs p-3 bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 shadow-sm rounded-xl transition-all hover:shadow-md">
                       <div className="flex items-center gap-3">
                         <div className={`w-2.5 h-2.5 rounded-full shadow-sm ${record.type === 'morning' ? 'bg-amber-400' : 'bg-indigo-400'}`} />
