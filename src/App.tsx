@@ -281,42 +281,32 @@ export default function App() {
       <main className="w-full max-w-md relative z-10">
         <AnimatePresence mode="wait">
           {view === 'home' && (
-            <GlassCard key="home" className="flex flex-col gap-6">
-              <div className="text-center space-y-2">
-                <h2 className="text-xl font-bold text-slate-800">欢迎回来</h2>
-                <p className="text-slate-500 text-sm">记录每一天的成长与坚持</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className={`p-4 rounded-2xl border-2 transition-all ${checkInType === 'morning' ? 'border-amber-200 bg-amber-50' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
-                  <Sun className={`w-8 h-8 mb-2 ${checkInType === 'morning' ? 'text-amber-500' : 'text-slate-400'}`} />
-                  <p className="text-xs font-bold text-slate-400 uppercase">早宣时间</p>
-                  <p className="text-sm font-semibold text-slate-700">06:30 - 10:00</p>
-                </div>
-                <div className={`p-4 rounded-2xl border-2 transition-all ${checkInType === 'evening' ? 'border-indigo-200 bg-indigo-50' : 'border-slate-100 bg-slate-50 opacity-60'}`}>
-                  <Moon className={`w-8 h-8 mb-2 ${checkInType === 'evening' ? 'text-indigo-500' : 'text-slate-400'}`} />
-                  <p className="text-xs font-bold text-slate-400 uppercase">晚结时间</p>
-                  <p className="text-sm font-semibold text-slate-700">20:00 - 23:30</p>
-                </div>
-              </div>
+            <GlassCard key="home" className="flex flex-col items-center justify-center py-8 px-2 gap-8 text-center min-h-[420px]">
+              <motion.div 
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1, rotate: [0, -10, 10, -10, 0] }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="p-5 rounded-full bg-gradient-to-tr from-amber-100 to-yellow-50 shadow-inner"
+              >
+                <Sparkles className="w-16 h-16 text-amber-500" />
+              </motion.div>
 
               <div className="space-y-3">
-                <NeoButton 
-                  onClick={() => setView('team-select')} 
-                  className="w-full py-4"
-                  disabled={!checkInType}
-                >
-                  {checkInType ? (checkInType === 'morning' ? '立即早宣打卡' : '立即晚结打卡') : '非打卡时间'}
-                  <ChevronRight className="w-5 h-5" />
-                </NeoButton>
-                <NeoButton 
-                  onClick={() => setView('stats')} 
-                  variant="secondary" 
-                  className="w-full py-4"
-                >
-                  查看打卡情况
-                  <BarChart3 className="w-5 h-5" />
-                </NeoButton>
+                <h2 className="text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-rose-500">
+                  圆满毕业！
+                </h2>
+                <p className="text-slate-700 font-bold text-xl">
+                  恭喜 <span className="text-indigo-600">传承62</span> 全体学员顺利结业
+                </p>
+              </div>
+
+              <div className="w-full px-5 py-6 bg-slate-50/80 backdrop-blur-sm rounded-2xl border border-slate-100 relative overflow-hidden shadow-sm mt-2">
+                <div className="absolute top-0 left-0 w-1.5 h-full bg-gradient-to-b from-amber-400 to-rose-400 rounded-l-2xl"></div>
+                <p className="text-slate-600 font-medium text-sm leading-relaxed text-left pl-2">
+                  无数个清晨与日暮，见证了你们的坚持与成长。<br/>
+                  日常打卡虽已结束，但传承的精神永不落幕！<br/><br/>
+                  <span className="text-amber-600 font-bold block text-center text-base">祝大家前程似锦，顶峰相见！✨</span>
+                </p>
               </div>
             </GlassCard>
           )}
